@@ -1,0 +1,8 @@
+{
+  "name": "Transient Specialists (BE)",
+  "description": "",
+  "repository": "https://github.com/pitrak1/transient-specialists-be",
+  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/main/public/node.svg",
+  "keywords": ["node", "express", "heroku"],
+  "image": "heroku/nodejs"
+}

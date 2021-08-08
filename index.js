@@ -1,11 +1,62 @@
-const express = require('express')
-const app = express()
+import express from 'express'
+import path from 'path'
+import ejs from 'ejs'
+import pg from 'pg'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import bcrypt from 'bcrypt'
+import knex from 'knex'
+import cors from 'cors'
+import { dbConnection } from './src/dbConnection.js'
+import hat from 'hat'
+import { requireAuth } from './src/requireAuth.js'
+
+const __dirname = path.resolve(path.dirname(''))
 const port = process.env.PORT || 3000
+const connection = dbConnection()
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+const app = express()
+
+const corsOptions = {
+    origin: ['https://transient-specialists-fe.herokuapp.com', 'http://localhost:5000'],
+    credentials: true
+}
+
+app.use(cors(corsOptions))
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(cookieParser())
+
+app.use(async (req, res, next) => {
+    const authToken = req.headers['authorization']
+    if (authToken) {
+        const user = await connection.from('users')
+            .column([{ id: 'users.id' }, 'username', 'password'])
+            .select()
+            .join('tokens', 'tokens.user_id', '=', 'users.id')
+            .where('value', authToken)
+        req.user = user
+    }
+    next()
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+app.post('/login', async (req, res) => {
+    const user = (await connection('users').where({ username: req.body.username }))[0]
+    await bcrypt.compare(req.body.password, user.password, async (err, result) => {
+        if (result) {
+            const authToken = hat()
+            await connection('tokens').insert({ value: authToken, user_id: user.id })
+            res.json({ authToken })
+        } else {
+            res.sendStatus(403)
+        }
+    })
 })
+
+// Example of endpoint with authentication
+// app.get('/games', requireAuth, async (req, res) => {
+//     const games = await connection.select('id', 'name', 'key').table('games')
+//     res.json(games)
+// })
+
+app.listen(port, () => console.log(`Listening on ${ port }`))

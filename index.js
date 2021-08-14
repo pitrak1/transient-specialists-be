@@ -53,10 +53,9 @@ app.post('/login', async (req, res) => {
     })
 })
 
-// Example of endpoint with authentication
-// app.get('/games', requireAuth, async (req, res) => {
-//     const games = await connection.select('id', 'name', 'key').table('games')
-//     res.json(games)
-// })
+app.get('/equipment', requireAuth, async (req, res) => {
+    const equipment = await connection.select().table('equipment')
+    res.json(equipment)
+})
 
 app.listen(port, () => console.log(`Listening on ${ port }`))

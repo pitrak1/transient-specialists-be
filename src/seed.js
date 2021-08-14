@@ -137,11 +137,11 @@ const addingData = async () => {
     await connection('item_groups_models').insert({ item_group_id: 3, model_id: 6 })
 
 	await connection('equipment').insert({ serial_number: 'Equipment abcdef 1', type_id: 1, model_id: 6 })
-	await connection('equipment').insert({ serial_number: 'Equipment abcde 2', type_id: 1, model_id: 6 })
-	await connection('equipment').insert({ serial_number: 'Equipment abcd 3', type_id: 3, model_id: 6 })
-	await connection('equipment').insert({ serial_number: 'Equipment abc 4', type_id: 3, model_id: 6 })
-	await connection('equipment').insert({ serial_number: 'Equipment ab 5', type_id: 2, model_id: 6 })
-	await connection('equipment').insert({ serial_number: 'Equipment a 6', type_id: 2, model_id: 6 })
+	await connection('equipment').insert({ serial_number: 'Equipment abcde 2', type_id: 1, model_id: 4 })
+	await connection('equipment').insert({ serial_number: 'Equipment abcd 3', type_id: 3, model_id: 4 })
+	await connection('equipment').insert({ serial_number: 'Equipment abc 4', type_id: 3, model_id: 2 })
+	await connection('equipment').insert({ serial_number: 'Equipment ab 5', type_id: 2, model_id: 2 })
+	await connection('equipment').insert({ serial_number: 'Equipment a 6', type_id: 2, model_id: 2 })
 
 	await connection('events').insert({ status: 'READY', equipment_id: 2, updated_at: '2017-12-19 07:37:16-05' });
 	await connection('events').insert({ status: 'IN', equipment_id: 2, updated_at: '2017-12-18 07:37:16-05' });

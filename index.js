@@ -54,7 +54,12 @@ app.post('/login', async (req, res) => {
 })
 
 app.get('/equipment', requireAuth, async (req, res) => {
-    const equipment = await connection.select().table('equipment')
+    const equipment = await connection.from('equipment')
+      .column([{ model: 'models.name', oem: 'oems.name', type: 'types.name' }, 'serial_number', 'notes'])
+      .select()
+      .join('models', 'models.id', '=', 'equipment.model_id')
+      .join('oems', 'oems.id', '=', 'models.oem_id')
+      .join('types', 'types.id', '=', 'equipment.type_id')
     res.json(equipment)
 })
 

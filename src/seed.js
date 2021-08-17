@@ -10,6 +10,7 @@ const connection = dbConnection()
 const cleanup = async () => {
 	await connection.schema.dropTableIfExists('tokens')
 	await connection.schema.dropTableIfExists('users')
+	await connection.schema.raw('DROP VIEW IF EXISTS recent_events;')
 	await connection.schema.dropTableIfExists('files')
 	await connection.schema.dropTableIfExists('handles')
 	await connection.schema.dropTableIfExists('events')
@@ -89,6 +90,34 @@ const creatingTables = async () => {
 	  	table.text('contents').notNullable()
 	  	table.integer('equipment_id').notNullable().references('id').inTable('equipment')
 	})
+
+	await connection.schema.raw(`
+		CREATE VIEW recent_events AS
+		SELECT
+			y.id AS id,
+			y.status AS status,
+			y.job_number AS job_number,
+			y.company_notes AS company_notes,
+			y.start_date AS start_date,
+			y.end_date AS end_date,
+		  	y.equipment_id AS equipment_id
+		FROM (
+			SELECT
+				x.id,
+				x.status,
+				x.job_number,
+				x.company_notes,
+				x.start_date,
+				x.end_date,
+				x.updated_at,
+				x.equipment_id,
+				ROW_NUMBER() OVER(
+				PARTITION BY x.equipment_id ORDER BY x.updated_at DESC
+				) AS rk
+			FROM events x
+		) y
+		WHERE y.rk = 1;
+	`)
 
 	await connection.schema.createTable('users', table => {
 	  	table.increments('id')

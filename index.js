@@ -68,13 +68,42 @@ app.get('/equipment', requireAuth, async (req, res) => {
 			oem: 'oems.name',
 			type_id: 'types.id',
 			type: 'types.name' 
-		}, 'serial_number', 'notes' ])
+		}, 'serial_number', 'notes'])
 	  .select()
 	  .join('models', 'models.id', '=', 'equipment.model_id')
 	  .join('oems', 'oems.id', '=', 'models.oem_id')
 	  .join('types', 'types.id', '=', 'equipment.type_id')
 	  .join('recent_events', 'recent_events.equipment_id', '=', 'equipment.id')
 	res.json(equipment)
+})
+
+app.get('/oems', requireAuth, async (req, res) => {
+	const oems = await connection.from('oems')
+	  .column(['id', 'name'])
+	  .select()
+	res.json(oems)
+})
+
+app.get('/models', requireAuth, async (req, res) => {
+	const models = await connection.from('models')
+	  .column([{ id: 'models.id', name: 'models.name', oem_id: 'oems.id', oem_name: 'oems.name' }])
+	  .select()
+	  .join('oems', 'oems.id', '=', 'models.oem_id')
+	res.json(models)
+})
+
+app.get('/types', requireAuth, async (req, res) => {
+	const types = await connection.from('types')
+	  .column(['id', 'name'])
+	  .select()
+	res.json(types)
+})
+
+app.get('/itemGroups', requireAuth, async (req, res) => {
+	const itemGroups = await connection.from('item_groups')
+	  .column(['id', 'name'])
+	  .select()
+	res.json(itemGroups)
 })
 
 app.listen(port, () => console.log(`Listening on ${ port }`))

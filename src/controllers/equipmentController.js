@@ -5,7 +5,8 @@ export const equipmentController = (connection, requireAuth) => {
 
 	router.get('/', requireAuth, async (req, res) => {
 		const equipment = await connection.from('equipment')
-		  .column([{ 
+		  .column([{
+		  	id: 'equipment.id',
 		  	event_id: 'recent_events.id',
 		  	event_status: 'recent_events.status',
 		  	event_job_number: 'recent_events.job_number',

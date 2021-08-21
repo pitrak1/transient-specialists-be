@@ -10,7 +10,6 @@ import cors from 'cors'
 import { dbConnection } from './src/dbConnection.js'
 import hat from 'hat'
 import { requireAuth } from './src/requireAuth.js'
-import { loginController } from './src/controllers/loginController.js'
 import { equipmentController } from './src/controllers/equipmentController.js'
 import { itemGroupsController } from './src/controllers/itemGroupsController.js'
 import { modelsController } from './src/controllers/modelsController.js'
@@ -34,7 +33,33 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
 
-app.use('/login', loginController(connection, requireAuth))
+app.use(async (req, res, next) => {
+	const authToken = req.headers['authorization']
+	if (authToken) {
+		const user = await connection.from('users')
+			.column([{ id: 'users.id' }, 'username', 'password'])
+			.select()
+			.join('tokens', 'tokens.user_id', '=', 'users.id')
+			.where('value', authToken)
+		req.user = user
+	}
+	next()
+})
+
+app.post('/login', async (req, res) => {
+	const user = (await connection('users').where({ username: req.body.username }))[0]
+	await bcrypt.compare(req.body.password, user.password, async (err, result) => {
+		if (result) {
+			const authToken = hat()
+			await connection('tokens').insert({ value: authToken, user_id: user.id })
+			res.json({ authToken })
+		} else {
+			res.sendStatus(403)
+		}
+	})
+})
+
+
 app.use('/equipment', equipmentController(connection, requireAuth))
 app.use('/itemGroups', itemGroupsController(connection, requireAuth))
 app.use('/models', modelsController(connection, requireAuth))

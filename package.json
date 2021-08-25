@@ -7,13 +7,15 @@
   "scripts": {
     "seed": "node src/seed.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive --exit"
   },
   "author": "Nick Pitrak",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^9.0.0",
@@ -21,6 +23,7 @@
     "express": "^4.15.2",
     "hat": "^0.0.3",
     "knex": "^0.95.4",
+    "mocha": "^9.1.0",
     "pg": "^8.6.0"
   },
   "repository": {

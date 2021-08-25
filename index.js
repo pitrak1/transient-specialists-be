@@ -16,12 +16,15 @@ import { modelsController } from './src/controllers/modelsController.js'
 import { oemsController } from './src/controllers/oemsController.js'
 import { reportsController } from './src/controllers/reportsController.js'
 import { typesController } from './src/controllers/typesController.js'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const __dirname = path.resolve(path.dirname(''))
 const port = process.env.PORT || 3000
 const connection = dbConnection()
 
-const app = express()
+export const app = express()
 
 const corsOptions = {
 	origin: ['https://transient-specialists-fe.herokuapp.com', 'http://localhost:5000'],

@@ -25,7 +25,7 @@ after(() => {
 
 describe('equipmentController', function() {
     describe ('GET /', function() {
-        it("should remove all first", (done) => {
+        it('gets all equipment', (done) => {
             chai.request(app)
                 .get('/equipment/')
                 .set('authorization', token)
@@ -36,5 +36,16 @@ describe('equipmentController', function() {
                 })
         })
 
+        it('gets most recent events', (done) => {
+            chai.request(app)
+                .get('/equipment/')
+                .set('authorization', token)
+                .end((err, res)=>{
+                    res.should.have.status(200)
+                    const equipment = res.body.find(e => e.id === 2)
+                    equipment.event_status.should.equal('READY')
+                    done()
+                })
+        })
     })
 })
